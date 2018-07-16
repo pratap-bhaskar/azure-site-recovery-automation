@@ -1,0 +1,41 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vaultName": {
+        "value": "AZURE-RECOVERY-SERVICES-VAULT-NAME"
+      },
+      "uniqueIdentifier": {
+        "value": "hgjkil"
+      },
+      "sourceLocation": {
+        "value": "East US 2"
+      },
+      "targetLocation": {
+        "value": "Central US"
+      },
+      "VMs": {
+        "value": [
+            {
+                "vmId":"RESOURCEID-OF-VM",
+                "targetAvailabiltySetId":"RESOURCEID-OF-TARGET-AVAILABILTY-SET or NULL",
+                "managedDisks":[
+                    "RESOURCEID-OF-MANAGED-DISKS-ATTACHED-TO-THIS-VM"
+                ]
+            }
+        ]
+      },
+      "sourceVNetId": {
+        "value": "RESOURCEID-OF-SOURCE-VNet"
+      },
+      "targetVNetId": {
+        "value": "RESOURCEID-OF-TARGET-VNet"
+      },
+      "recoveryResourceGroupId": {
+        "value": "RESOURCEID-OF-TARGET-RESOURCE-GROUP"
+      },
+      "stagingStorageAccountId":{
+          "value":"RESOURCEID-OF-CACHE-STORAGE"
+      }	
+    }
+  }

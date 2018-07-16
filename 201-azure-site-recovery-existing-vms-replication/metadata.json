@@ -1,0 +1,8 @@
+{
+    "$schema": "https://aka.ms/azure-quickstart-templates-metadata-schema#",
+    "itemDisplayName": "Add existing VMs in Azure into an existing recovery services vault for replication",
+    "description": "This template allows users to replicate existing Vms in Azure and its managed disks to replicate, using already existing recovery services vault",
+    "summary": "Replicate VMs in Azure into ASR",
+    "githubUsername": "pratap-dotnet",
+    "dateUpdated": "2018-16-07"
+}
