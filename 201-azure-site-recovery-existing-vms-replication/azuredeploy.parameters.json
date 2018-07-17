@@ -2,7 +2,7 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-      "vaultName": {
+      "existingVaultName": {
         "value": "AZURE-RECOVERY-SERVICES-VAULT-NAME"
       },
       "uniqueIdentifier": {
@@ -14,7 +14,7 @@
       "targetLocation": {
         "value": "Central US"
       },
-      "VMs": {
+      "existingVMs": {
         "value": [
             {
                 "vmId":"RESOURCEID-OF-VM",

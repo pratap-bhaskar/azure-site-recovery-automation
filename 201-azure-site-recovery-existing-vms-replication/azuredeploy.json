@@ -2,7 +2,7 @@
     "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "vaultName": {
+        "existingVaultName": {
             "type": "string",
             "metadata":{
               "description":"Name of the existing vault"
@@ -26,7 +26,7 @@
               "description":"Replication location where the VMs should be recovered"
             }
         },
-        "VMs":{
+        "existingVMs":{
             "type": "array",
             "defaultValue": [{
                 "vmId":"",
@@ -82,10 +82,10 @@
         "sourceLocation":"[toLower(replace(parameters('sourceLocation'),' ', ''))]",
         "targetLocation":"[toLower(replace(parameters('targetLocation'),' ', ''))]",
         
-        "sourceFabricName": "[concat(parameters('vaultName'),'/', variables('sourceLocation'),'-fabric')]",
-        "targetFabricName": "[concat(parameters('vaultName'),'/', variables('targetLocation'),'-fabric')]",
+        "sourceFabricName": "[concat(parameters('existingVaultName'),'/', variables('sourceLocation'),'-fabric')]",
+        "targetFabricName": "[concat(parameters('existingVaultName'),'/', variables('targetLocation'),'-fabric')]",
         
-        "replicationPolicyName": "[concat(parameters('vaultName'),'/',parameters('uniqueIdentifier'),'-retentionpolicy')]",
+        "replicationPolicyName": "[concat(parameters('existingVaultName'),'/',parameters('uniqueIdentifier'),'-retentionpolicy')]",
         "sourceContainerName": "[concat(variables('sourceFabricName'),'/', parameters('uniqueIdentifier'), variables('sourceLocation'),'-container')]",
         "targetContainerName": "[concat(variables('targetFabricName'),'/', parameters('uniqueIdentifier'), variables('targetLocation'),'-container')]",
         "sourceMapping": "[concat(variables('sourceContainerName'), '/',parameters('uniqueIdentifier'), variables('sourceLocation'), '-',variables('targetLocation'),'-24-hour-retention-policy')]",
@@ -93,14 +93,14 @@
         "sourceVNetMapping": "[concat(variables('sourceFabricName'), '/azureNetwork/', variables('sourceLocation'), '-',variables('targetLocation'), '-vnet-mapping')]",
         "targetVNetMapping": "[concat(variables('targetFabricName'), '/azureNetwork/', variables('targetLocation'), '-', variables('sourceLocation'), '-vnet-mapping')]",
 
-        "policyId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationPolicies/',parameters('vaultName'),concat(parameters('uniqueIdentifier'),'-retentionpolicy'))]",
-        "sourceFabricId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/',parameters('vaultName'),concat(variables('sourceLocation'),'-fabric'))]",
-        "targetFabricId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/',parameters('vaultName'),concat( variables('targetLocation'),'-fabric'))]",
+        "policyId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationPolicies/',parameters('existingVaultName'),concat(parameters('uniqueIdentifier'),'-retentionpolicy'))]",
+        "sourceFabricId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/',parameters('existingVaultName'),concat(variables('sourceLocation'),'-fabric'))]",
+        "targetFabricId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/',parameters('existingVaultName'),concat( variables('targetLocation'),'-fabric'))]",
         
-        "sourceContainerResourceId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers',parameters('vaultName'),concat(variables('sourceLocation'),'-fabric'),concat(parameters('uniqueIdentifier'),variables('sourceLocation'),'-container'))]",
-        "targetContainerResourceId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers',parameters('vaultName'),concat( variables('targetLocation'),'-fabric'),concat(parameters('uniqueIdentifier'),variables('targetLocation'),'-container'))]",
-        "sourceMappingResourceId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectionContainerMappings',parameters('vaultName'),concat(variables('sourceLocation'),'-fabric'),concat(parameters('uniqueIdentifier'),variables('sourceLocation'),'-container'), concat(parameters('uniqueIdentifier'), variables('sourceLocation'),'-', variables('targetLocation'),'-24-hour-retention-policy'))]",
-        "targetMappingResoureId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectionContainerMappings',parameters('vaultName'),concat( variables('targetLocation'),'-fabric'),concat(parameters('uniqueIdentifier'),variables('targetLocation'),'-container'), concat(parameters('uniqueIdentifier'),variables('targetLocation'), '-', variables('sourceLocation'),'-24-hour-retention-policy'))]",
+        "sourceContainerResourceId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers',parameters('existingVaultName'),concat(variables('sourceLocation'),'-fabric'),concat(parameters('uniqueIdentifier'),variables('sourceLocation'),'-container'))]",
+        "targetContainerResourceId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers',parameters('existingVaultName'),concat( variables('targetLocation'),'-fabric'),concat(parameters('uniqueIdentifier'),variables('targetLocation'),'-container'))]",
+        "sourceMappingResourceId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectionContainerMappings',parameters('existingVaultName'),concat(variables('sourceLocation'),'-fabric'),concat(parameters('uniqueIdentifier'),variables('sourceLocation'),'-container'), concat(parameters('uniqueIdentifier'), variables('sourceLocation'),'-', variables('targetLocation'),'-24-hour-retention-policy'))]",
+        "targetMappingResoureId":"[resourceId('Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectionContainerMappings',parameters('existingVaultName'),concat( variables('targetLocation'),'-fabric'),concat(parameters('uniqueIdentifier'),variables('targetLocation'),'-container'), concat(parameters('uniqueIdentifier'),variables('targetLocation'), '-', variables('sourceLocation'),'-24-hour-retention-policy'))]",
         "sourceprotectionItemPrefix":"[concat(variables('sourceContainerName'),'/',parameters('uniqueIdentifier'),'-','protectedItems')]",
         "vmGroupName":"[concat(parameters('uniqueIdentifier'),'-multivmgroup')]"
     },
@@ -247,7 +247,7 @@
             "type": "Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems",
             "copy":{
                 "name":"vmloop",
-                "count":"[length(parameters('VMs'))]"
+                "count":"[length(parameters('existingVMs'))]"
             },
             "name": "[concat(variables('sourceprotectionItemPrefix'),copyIndex('vmloop'))]",
             "dependsOn": [
@@ -262,14 +262,14 @@
                 "protectableItemId": "",
                 "providerSpecificDetails":{
                     "instanceType":"A2A",
-                    "fabricObjectId": "[parameters('VMs')[copyIndex('vmloop')].vmId]",
+                    "fabricObjectId": "[parameters('existingVMs')[copyIndex('vmloop')].vmId]",
                     "recoveryContainerId": "[variables('targetContainerResourceId')]",
                     "recoveryResourceGroupId": "[parameters('recoveryResourceGroupId')]",
                     "copy":[{
                         "name":"vmManagedDisks",
-                        "count":"[length(parameters('VMs')[copyIndex('vmloop')].managedDisks)]",
+                        "count":"[length(parameters('existingVMs')[copyIndex('vmloop')].managedDisks)]",
                         "input":{
-                          "diskId": "[parameters('VMs')[copyIndex('vmloop')].managedDisks[copyIndex('vmManagedDisks')]]",
+                          "diskId": "[parameters('existingVMs')[copyIndex('vmloop')].managedDisks[copyIndex('vmManagedDisks')]]",
                           "primaryStagingAzureStorageAccountId": "[parameters('stagingStorageAccountId')]",
                           "recoveryResourceGroupId": "[parameters('recoveryResourceGroupId')]",
                           "recoveryReplicaDiskAccountType":"[parameters('recoveryReplicaDiskAccountType')]",
@@ -277,7 +277,7 @@
                         }
                     }],
                     "multiVmGroupName" : "[variables('vmGroupName')]",
-                    "recoveryAvailabilitySetId":"[parameters('VMs')[copyIndex('vmloop')].targetAvailabiltySetId]"
+                    "recoveryAvailabilitySetId":"[parameters('existingVMs')[copyIndex('vmloop')].targetAvailabiltySetId]"
                 }
             }
         }
